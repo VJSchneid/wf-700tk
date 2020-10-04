@@ -11,6 +11,7 @@ add_executable(test_wf700tk
     main.cpp
     ticket_channel.cpp
     credit_channel.cpp
+    response_parser.cpp
 )
 
 target_link_libraries(test_wf700tk
