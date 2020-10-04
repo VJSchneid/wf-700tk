@@ -1,8 +1,12 @@
 #include <wf700tk/response_parser.hpp>
 
-namespace wf700tk::detail {
+namespace wf700tk {
 
-response_parser::response_parser() : basic_parser(msg_length_, false) {}
+response_parser::response_parser() : detail::basic_parser(msg_length_, false) {}
+
+const response &response_parser::message() const { return msg_; }
+
+response &response_parser::message() { return msg_; }
 
 bool response_parser::data_handler(unsigned int pos, char data) {
     switch (pos) {
@@ -43,4 +47,6 @@ bool response_parser::data_handler(unsigned int pos, char data) {
     return true;
 }
 
-} // namespace wf700tk::detail
+void response_parser::reset_data() {}
+
+} // namespace wf700tk
