@@ -3,6 +3,7 @@ add_library(wf700tk
     response_parser.cpp
     credit_channel.cpp
     ticket_channel.cpp
+    response.cpp
 )
 
 target_link_libraries(wf700tk PUBLIC config_wf700tk)

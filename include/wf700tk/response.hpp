@@ -7,6 +7,12 @@
 namespace wf700tk {
 
 struct response {
+    response() = default;
+
+    response(bool accepted_credit, credit_channel cc, ticket_channel tc,
+             unsigned char tickets_to_dispense,
+             unsigned char tickets_already_dispensed);
+
     bool accepted_credit_ = false;
     credit_channel credit_channel_ = credit_channel::none;
     ticket_channel ticket_channel_ = ticket_channel::none;
