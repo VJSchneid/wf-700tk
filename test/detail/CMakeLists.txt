@@ -1,5 +1,6 @@
 add_library(test_wf700tk_detail OBJECT
     basic_parser.cpp
+    basic_writer.cpp
 )
 
 
