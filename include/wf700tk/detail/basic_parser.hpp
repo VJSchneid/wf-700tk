@@ -3,17 +3,19 @@
 
 #include <boost/asio/buffer.hpp>
 
+#include <wf700tk/detail/message_base.hpp>
+
 namespace wf700tk::detail {
 
 namespace net = boost::asio;
 
-struct basic_parser {
+struct basic_parser : private message_base {
     basic_parser(unsigned char msg_length, bool is_request);
     virtual ~basic_parser() = default;
 
     std::size_t put(const net::const_buffer &buf);
 
-    unsigned int message_length() const;
+    using message_base::length;
 
     bool success() const;
 
@@ -34,16 +36,7 @@ private:
         success
     } state_;
 
-    constexpr const static unsigned char start_byte_ = 0x02;
-    constexpr const static unsigned char end_byte_ = 0x03;
-    constexpr const static unsigned char request_byte_ = 0x10;
-    constexpr const static unsigned char response_byte_ = 0x20;
-    constexpr const static unsigned int tail_size_ = 2;
-
-    const std::array<unsigned char, 3> head_;
-
     unsigned int pos_ = 0;
-    const unsigned int msg_length_;
 };
 
 } // namespace wf700tk::detail

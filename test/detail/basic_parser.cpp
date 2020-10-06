@@ -21,9 +21,9 @@ struct parser_test : basic_parser {
 
     void reset_data() override {
         data_.clear();
-        if (message_length() >= 5) {
-            data_.resize(message_length() - 5);
-            valid_length_ = message_length() - 5;
+        if (length() >= 5) {
+            data_.resize(length() - 5);
+            valid_length_ = length() - 5;
         }
     }
 

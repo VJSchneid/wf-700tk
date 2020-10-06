@@ -5,9 +5,7 @@
 namespace wf700tk::detail {
 
 basic_parser::basic_parser(unsigned char msg_length, bool is_request)
-    : head_{{start_byte_, msg_length,
-             is_request ? request_byte_ : response_byte_}},
-      msg_length_{msg_length} {}
+    : message_base(msg_length, is_request) {}
 
 std::size_t basic_parser::put(const net::const_buffer &buf) {
     auto begin = net::buffer_cast<const unsigned char *>(buf);
@@ -48,9 +46,10 @@ std::size_t basic_parser::put(const net::const_buffer &buf) {
             break;
         }
 
-        case state::read_data:
+        case state::read_data: {
+            unsigned int msg_len = length();
             for (; begin != end; ++begin, ++pos_) {
-                if (pos_ == msg_length_ - tail_size_) {
+                if (pos_ == msg_len - tail_size_) {
                     state_ = state::end_byte;
                     break;
                 }
@@ -62,6 +61,7 @@ std::size_t basic_parser::put(const net::const_buffer &buf) {
                 }
             }
             break;
+        }
 
         case state::end_byte:
             if (*begin != end_byte_) {
@@ -86,8 +86,6 @@ std::size_t basic_parser::put(const net::const_buffer &buf) {
     }
     return net::buffer_size(buf);
 }
-
-unsigned int basic_parser::message_length() const { return msg_length_; }
 
 bool basic_parser::success() const { return state_ == state::success; }
 
