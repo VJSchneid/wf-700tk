@@ -4,6 +4,7 @@ add_library(wf700tk
     credit_channel.cpp
     ticket_channel.cpp
     response.cpp
+    request_writer.cpp
 )
 
 target_link_libraries(wf700tk PUBLIC config_wf700tk)
