@@ -14,6 +14,9 @@ enum class ticket_channel : unsigned char {
 };
 
 std::optional<ticket_channel> make_ticket_channel(unsigned int v);
+std::optional<ticket_channel> make_ticket_channel_from_index(unsigned int i);
+
+std::optional<unsigned int> ticket_channel_index(ticket_channel v);
 
 } // namespace wf700tk
 
