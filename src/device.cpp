@@ -38,6 +38,10 @@ void device::output(ticket_channel channel, unsigned int amount,
     }
 }
 
+net::serial_port &device::serial_port() { return port_; }
+
+const net::serial_port &device::serial_port() const { return port_; }
+
 void device::start_poll() {
     poll_timer_.expires_after(polling_duration_);
     poll_timer_.async_wait([this](const error_code &ec) {

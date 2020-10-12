@@ -45,6 +45,9 @@ public:
     void output(ticket_channel channel, unsigned int amount,
                 const output_handler &handler);
 
+    net::serial_port &serial_port();
+    const net::serial_port &serial_port() const;
+
 private:
     void start_poll();
 
