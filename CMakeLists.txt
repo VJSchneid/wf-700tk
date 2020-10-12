@@ -4,6 +4,10 @@ project(wf-700tk LANGUAGES CXX)
 
 add_library(config_wf700tk INTERFACE)
 
+find_package(Boost REQUIRED)
+find_package(Threads)
+
+target_link_libraries(config_wf700tk INTERFACE Boost::boost Threads::Threads)
 target_compile_features(config_wf700tk INTERFACE cxx_std_17)
 target_include_directories(config_wf700tk INTERFACE include/)
 
@@ -14,3 +18,4 @@ endif()
 
 add_subdirectory(src)
 add_subdirectory(test)
+add_subdirectory(example)
