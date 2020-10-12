@@ -34,7 +34,7 @@ private:
         end_byte,
         checksum,
         success
-    } state_;
+    } state_ = state::find_start;
 
     unsigned int pos_ = 0;
 };
