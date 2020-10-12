@@ -21,7 +21,8 @@ class device {
 public:
     using error_code = boost::system::error_code;
     using clock = std::chrono::steady_clock;
-    using output_handler = std::function<void(int, const error_code &)>;
+    using output_handler =
+        std::function<void(const error_code &, unsigned int not_dispensed)>;
 
     device(net::serial_port &&port);
 
@@ -67,12 +68,11 @@ private:
     struct output_state {
         bool active = false;
         int to_dispense = 0;
-        std::function<void(const error_code &ec, unsigned int dispensed)>
-            callback;
+        output_handler callback;
 
         void inform(unsigned char tickets_dispensed);
         unsigned char next_dispense_amount() const;
-        void prepare_for_sending();
+        void prepare_for_sending(unsigned int amount);
         void reset();
         bool timed_out() const;
 
