@@ -28,15 +28,24 @@ bool writer_test::write_data(unsigned char *begin) {
 struct data_sequence {
     data_sequence(unsigned char start_byte = 0x12) : pos(start_byte) {}
 
+    using difference_type = std::size_t;
     using value_type = unsigned char;
-    using iterator_category = std::output_iterator_tag;
+    using pointer = const unsigned char *;
+    using reference = const unsigned char &;
+    using iterator_category = std::input_iterator_tag;
 
     data_sequence &operator++() {
         ++pos;
         return *this;
     }
 
+    data_sequence &operator++(int) { return ++(*this); }
+
     unsigned char operator*() const { return pos; }
+    const unsigned char *operator->() { return &pos; }
+
+    bool operator==(const data_sequence &rhs) const { return pos == rhs.pos; }
+    bool operator!=(const data_sequence &rhs) const { return !(*this == rhs); }
 
     unsigned char pos;
 };
