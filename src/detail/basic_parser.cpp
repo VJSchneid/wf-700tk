@@ -8,7 +8,7 @@ basic_parser::basic_parser(unsigned char msg_length, bool is_request)
     : message_base(msg_length, is_request) {}
 
 std::size_t basic_parser::put(const net::const_buffer &buf) {
-    auto begin = net::buffer_cast<const unsigned char *>(buf);
+    iterator begin(net::buffer_cast<const unsigned char *>(buf));
     const auto absolute_begin = begin;
     auto end = begin + net::buffer_size(buf);
 
@@ -89,8 +89,8 @@ std::size_t basic_parser::put(const net::const_buffer &buf) {
 
 bool basic_parser::success() const { return state_ == state::success; }
 
-const unsigned char *basic_parser::retry(const unsigned char *begin,
-                                         const unsigned char *absolute_begin) {
+basic_parser::iterator basic_parser::retry(iterator begin,
+                                           iterator absolute_begin) {
     state_ = state::find_start;
     if (std::distance(absolute_begin, begin) < static_cast<long>(pos_)) {
         return absolute_begin + 1;

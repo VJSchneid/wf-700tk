@@ -20,12 +20,13 @@ struct basic_parser : private message_base {
     bool success() const;
 
 protected:
+    using iterator = std::vector<unsigned char>::const_iterator;
+
     virtual bool data_handler(unsigned int pos, char data) = 0;
     virtual void reset_data() = 0;
 
 private:
-    const unsigned char *retry(const unsigned char *begin,
-                               const unsigned char *absolute_begin);
+    iterator retry(iterator begin, iterator absolute_begin);
 
     enum class state {
         find_start,
