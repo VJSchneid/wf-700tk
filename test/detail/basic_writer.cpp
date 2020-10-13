@@ -28,6 +28,9 @@ bool writer_test::write_data(unsigned char *begin) {
 struct data_sequence {
     data_sequence(unsigned char start_byte = 0x12) : pos(start_byte) {}
 
+    using value_type = unsigned char;
+    using iterator_category = std::output_iterator_tag;
+
     data_sequence &operator++() {
         ++pos;
         return *this;
