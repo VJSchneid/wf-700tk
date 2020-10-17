@@ -28,13 +28,23 @@ void device::input_callback(
 
 void device::output(ticket_channel channel, unsigned int amount,
                     const device::output_handler &handler) {
-    auto index = ticket_channel_index(channel);
-    if (!index)
+    if (amount == 0) {
+        handler(error_code(), amount);
         return;
+    }
+
+    auto index = ticket_channel_index(channel);
+    if (!index) {
+        handler(net::error::invalid_argument, amount);
+        return;
+    }
+
     auto &output = ticket_output_[*index];
     if (!output.active) {
         output.to_dispense = amount;
         output.callback = handler;
+    } else {
+        handler(net::error::already_started, amount);
     }
 }
 
