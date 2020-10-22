@@ -17,5 +17,13 @@ if(COVERAGE)
 endif()
 
 add_subdirectory(src)
-add_subdirectory(test)
-add_subdirectory(example)
+
+option(ENABLE_TESTING "build unit tests" 0)
+if(ENABLE_TESTING)
+    add_subdirectory(test)
+endif()
+
+option(ENABLE_EXAMPLES "build examples" 0)
+if(ENABLE_EXAMPLES)
+    add_subdirectory(example)
+endif()
