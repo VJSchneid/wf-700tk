@@ -24,6 +24,10 @@ void device::input_callback(
                         credit_channel::none);
     }
     input_callback_ = callback;
+    if (response_timeout_counter_ < 0) {
+        // we should inform the new callback also if there is a timeout
+        response_timeout_counter_ = -1;
+    }
 }
 
 void device::output(ticket_channel channel, unsigned int amount,
@@ -57,9 +61,6 @@ void device::start_poll() {
     poll_timer_.async_wait([this](const error_code &ec) {
         if (!ec) {
             poll();
-        } else {
-            std::cerr << "failed to wait for poll timer: " << ec.message()
-                      << '\n';
         }
     });
 }
@@ -69,8 +70,6 @@ void device::start_read() {
                           [this](const error_code &ec, std::size_t len) {
                               if (!ec) {
                                   handle_read(len);
-                              } else {
-                                  std::cerr << ec.message() << '\n';
                               }
                           });
 }
@@ -79,6 +78,7 @@ void device::handle_read(std::size_t len) {
     response_reader_.put(net::buffer(response_buffer_.data(), len));
     if (response_reader_.success()) {
         handle_poll_response(response_reader_.message());
+        response_timeout_counter_ = response_timeout_;
     }
     start_read();
 }
@@ -102,13 +102,19 @@ void device::poll() {
     auto buf = net::buffer(request_buffer_);
     req_w.write(buf);
 
+    if (response_timeout_counter_ >= 0) {
+        --response_timeout_counter_;
+    } else {
+        handle_response_timeout();
+    }
+
     net::async_write(
         port_, buf,
         [this](const error_code &ec, std::size_t /*bytes_written*/) {
             if (!ec) {
                 start_poll();
             } else {
-                std::cerr << "write failed: " << ec.message() << '\n';
+                handle_port_error(ec);
             }
         });
 }
@@ -137,6 +143,35 @@ void device::prepare_poll(request &req) {
             req.tickets_to_dispense(output.next_dispense_amount());
             output.prepare_for_sending(req.tickets_to_dispense());
             return;
+        }
+    }
+}
+
+void device::handle_response_timeout() {
+    error_code ec(net::error::timed_out);
+    if (response_timeout_counter_ == -1 && input_callback_) {
+        // do not inform this callback anymore
+        response_timeout_counter_ = -2;
+        input_callback_(ec, credit_channel::none);
+    }
+    handle_global_output_error(ec);
+}
+
+void device::handle_port_error(const device::error_code &ec) {
+    port_.close();
+    if (input_callback_) {
+        input_callback_(ec, credit_channel::none);
+    }
+    handle_global_output_error(ec);
+}
+
+void device::handle_global_output_error(const error_code &ec) {
+    for (auto &channel : ticket_output_) {
+        if (channel.active) {
+            if (channel.callback) {
+                channel.callback(ec, channel.to_dispense);
+            }
+            channel.reset();
         }
     }
 }

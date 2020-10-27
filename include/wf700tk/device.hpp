@@ -59,6 +59,10 @@ private:
 
     void prepare_poll(request &req);
 
+    void handle_response_timeout();
+    void handle_port_error(const error_code &ec);
+    void handle_global_output_error(const error_code &ec);
+
     net::serial_port port_;
 
     net::steady_timer poll_timer_;
@@ -87,6 +91,9 @@ private:
     std::array<output_state, 4> ticket_output_;
 
     std::function<void(const error_code &, credit_channel)> input_callback_;
+
+    constexpr static const int response_timeout_ = 3;
+    int response_timeout_counter_ = response_timeout_;
 };
 
 } // namespace wf700tk
