@@ -12,9 +12,8 @@ target_compile_features(config_wf700tk INTERFACE cxx_std_17)
 target_include_directories(config_wf700tk INTERFACE include/)
 
 if(BUILD_SHARED_LIBS)
-  set_target_properties(config_wf700tk PROPERTIES POSITION_INDEPENDENT_CODE 1)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
-
 
 if(COVERAGE)
     target_compile_options(config_wf700tk INTERFACE --coverage)
