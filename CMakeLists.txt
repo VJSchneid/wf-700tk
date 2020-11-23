@@ -11,6 +11,11 @@ target_link_libraries(config_wf700tk INTERFACE Boost::boost Threads::Threads)
 target_compile_features(config_wf700tk INTERFACE cxx_std_17)
 target_include_directories(config_wf700tk INTERFACE include/)
 
+if(BUILD_SHARED_LIBS)
+  set_target_properties(config_wf700tk PROPERTIES POSITION_INDEPENDENT_CODE 1)
+endif()
+
+
 if(COVERAGE)
     target_compile_options(config_wf700tk INTERFACE --coverage)
     target_link_options(config_wf700tk INTERFACE --coverage)
