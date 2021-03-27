@@ -17,6 +17,8 @@ struct basic_writer : private message_base {
 
     bool write(const net::mutable_buffer &buf);
 
+    using message_base::ack;
+
     using message_base::length;
 
 protected:

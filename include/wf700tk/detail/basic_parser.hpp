@@ -29,7 +29,8 @@ private:
 
     enum class state {
         find_start,
-        check_head,
+        check_length,
+        check_msg_type_and_ack,
         read_data,
         end_byte,
         checksum,

@@ -94,6 +94,7 @@ private:
 
     constexpr static const int response_timeout_ = 3;
     int response_timeout_counter_ = response_timeout_;
+    unsigned char next_ack = 0;
 };
 
 } // namespace wf700tk

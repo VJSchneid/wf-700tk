@@ -189,6 +189,13 @@ TEST_CASE("parser reads two messages") {
     validate_request(p, test_request_common);
 }
 
+TEST_CASE("parser handles ack") {
+    parser_test p(11, false);
+    auto request = test_request_common;
+    request[2] |= 0b1111;
+    REQUIRE(p.put(net::buffer(request)) == 11);
+}
+
 TEST_CASE(
     "parser reads incorrect message but can not jump to absolute beginning") {
     auto msg = double_message();

@@ -98,6 +98,8 @@ void device::handle_poll_response(const response &resp) {
 
 void device::poll() {
     request_writer req_w;
+    req_w.ack(next_ack);
+    next_ack = next_ack ? 0 : 1;
     prepare_poll(req_w.msg());
     auto buf = net::buffer(request_buffer_);
     req_w.write(buf);

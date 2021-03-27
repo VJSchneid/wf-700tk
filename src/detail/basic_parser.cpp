@@ -20,31 +20,33 @@ std::size_t basic_parser::put(const net::const_buffer &buf) {
                 return net::buffer_size(buf);
             }
             ++begin;
-            pos_ = 1;
-            state_ = state::check_head;
+            state_ = state::check_length;
             break;
         }
 
-        case state::check_head: {
-            bool partial = false;
-            auto head_end = begin + head_.size() - pos_;
-
-            if (head_end > end) {
-                partial = true;
-                head_end = end;
-            }
-
-            if (std::equal(begin, head_end, head_.begin() + pos_)) {
-                pos_ += std::distance(begin, head_end);
-                begin = head_end;
-                if (!partial) {
-                    state_ = state::read_data;
-                }
-            } else {
+        case state::check_length:
+            if (*begin != length()) {
                 state_ = state::find_start;
+                break;
             }
+            ++begin;
+            state_ = state::check_msg_type_and_ack;
             break;
-        }
+
+        case state::check_msg_type_and_ack:
+            if ((*begin & 0xf0) == (head_[2] & 0xf0)) {
+                ack(*begin & 0x0f);
+            } else {
+                if (begin > absolute_begin) {
+                    --begin;
+                }
+                state_ = state::find_start;
+                break;
+            }
+            ++begin;
+            state_ = state::read_data;
+            pos_ = head_.size();
+            break;
 
         case state::read_data: {
             unsigned int msg_len = length();
